@@ -9,11 +9,9 @@ type Sjf struct {
 	Processes []Process
 }
 
-// ShortestJobFirst implementa o algoritmo de escalonamento SJF.
 func (a *Sjf) ShortestJobFirst() []Process {
 	fmt.Println("\nSHORTEST JOB FIRST")
 
-	// Ordena os processos primeiro por tempo de chegada e, em caso de empate, por tempo de serviço.
 	sort.SliceStable(a.Processes, func(i, j int) bool {
 		if a.Processes[i].ArrivedTime == a.Processes[j].ArrivedTime {
 			return a.Processes[i].ServiceTime < a.Processes[j].ServiceTime
@@ -24,7 +22,6 @@ func (a *Sjf) ShortestJobFirst() []Process {
 	return a.Processes
 }
 
-// AverageExecutionTime calcula o tempo médio de execução dos processos.
 func (a *Sjf) AverageExecutionTime() {
 	var totalExecutionTime int
 	for _, process := range a.Processes {
@@ -34,7 +31,6 @@ func (a *Sjf) AverageExecutionTime() {
 	fmt.Printf("\nTempo médio de execução: %.1f s\n", AverageExecutionTime)
 }
 
-// AverageWaitingTime calcula o tempo médio de espera dos processos.
 func (a *Sjf) AverageWaitingTime() {
 	var totalWaitTime int
 	for i, process := range a.Processes {
