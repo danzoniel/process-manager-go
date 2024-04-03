@@ -7,12 +7,10 @@ import (
 
 type Fcfs struct {
 	Processes []Process
-	ProcessHandler
 }
 
 func (a *Fcfs) FirstComeFirtServerd() []Process {
 	fmt.Println("\nFIRST COME FIRST SERVED")
-
 	processessQuantity := len(a.Processes)
 
 	if processessQuantity <= 1 {

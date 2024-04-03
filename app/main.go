@@ -51,10 +51,22 @@ func handleProcesses(processes []algorithms.Process) {
 
 	algorithms.PrintTable(processes)
 
+	callingFcfs(processes)
+	callingSjf(processes)
+}
+
+func callingFcfs(processes []algorithms.Process) {
 	fcfs := algorithms.Fcfs{Processes: processes}
 
 	algorithms.PrintTable(fcfs.FirstComeFirtServerd())
 	fcfs.AverageExecutionTime()
 	fcfs.AverageWaitingTime()
+}
 
+func callingSjf(processes []algorithms.Process) {
+	sjf := algorithms.Sjf{Processes: processes}
+
+	algorithms.PrintTable(sjf.ShortestJobFirst())
+	sjf.AverageExecutionTime()
+	sjf.AverageWaitingTime()
 }
