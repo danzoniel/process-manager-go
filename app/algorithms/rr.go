@@ -5,92 +5,85 @@ import (
 	"sort"
 )
 
-type RoundRobin struct {
+type RR struct {
 	Processes []Process
 	Quantum   int
 }
 
-func (r *RoundRobin) Schedule() []Process {
+func (a *RR) RoundRobin() []Process {
 	fmt.Println("\nROUND ROBIN")
 
-	// Ordena os processos pelo tempo de chegada.
-	sort.SliceStable(r.Processes, func(i, j int) bool {
-		return r.Processes[i].ArrivedTime < r.Processes[j].ArrivedTime
+	if len(a.Processes) == 0 {
+		fmt.Println("Nenhum processo na fila.")
+		return a.Processes
+	}
+
+	sort.SliceStable(a.Processes, func(i, j int) bool {
+		return a.Processes[i].ArrivedTime < a.Processes[j].ArrivedTime
 	})
 
-	var waitingQueue []Process
-	var completedQueue []Process
 	var currentTime int
-
-	for len(r.Processes) > 0 || len(waitingQueue) > 0 {
-		// Move todos os processos que chegaram até agora para a fila de espera.
-		for _, process := range r.Processes {
-			if process.ArrivedTime <= currentTime {
-				waitingQueue = append(waitingQueue, process)
-			} else {
-				break
+	var queue []Process
+	for {
+		for _, process := range a.Processes {
+			if process.ArrivedTime <= currentTime && !contains(queue, process) {
+				queue = append(queue, process)
 			}
 		}
-		if len(r.Processes) >= len(waitingQueue) {
-			r.Processes = r.Processes[len(waitingQueue):]
+
+		if len(queue) == 0 {
+			break
+		}
+
+		process := queue[0]
+		queue = queue[1:]
+
+		executionTime := min(a.Quantum, process.ServiceTime)
+		process.ServiceTime -= executionTime
+		currentTime += executionTime
+
+		if process.ServiceTime == 0 {
+			process.WaitTime = currentTime - process.ArrivedTime - process.ServiceTime
 		} else {
-			r.Processes = nil // ou r.Processes = []Process{}
+			queue = append(queue, process)
 		}
-
-		// Se não houver processos na fila de espera, avança o tempo até o próximo processo chegar.
-		if len(waitingQueue) == 0 {
-			if len(r.Processes) > 0 {
-				currentTime = r.Processes[0].ArrivedTime
-			}
-			continue
-		}
-
-		// Executa o próximo processo na fila de espera.
-		process := waitingQueue[0]
-		waitingQueue = waitingQueue[1:]
-
-		// Se o processo não termina dentro do quantum, interrompe-o e coloca-o de volta na fila de espera.
-		if process.ServiceTime > r.Quantum {
-			process.ServiceTime -= r.Quantum
-			waitingQueue = append(waitingQueue, process)
-		} else {
-			completedQueue = append(completedQueue, process)
-		}
-
-		// Avança o tempo pelo quantum.
-		currentTime += r.Quantum
 	}
 
-	// Imprime os processos completados.
-	fmt.Println("\nProcessos completados:")
-	for _, process := range completedQueue {
-		fmt.Printf("Tempo de chegada: %d, Tempo de serviço: %d\n", process.ArrivedTime, process.ServiceTime)
-	}
-
-	return completedQueue
+	return a.Processes
 }
 
-// AverageExecutionTime calcula o tempo médio de execução dos processos completados.
-func (r *RoundRobin) AverageExecutionTime() {
-	completedProcesses := r.Schedule()
+func (a *RR) AverageExecutionTime() {
 	var totalExecutionTime int
-	for _, process := range completedProcesses {
+	for _, process := range a.Processes {
 		totalExecutionTime += process.ServiceTime
 	}
-	averageExecutionTime := float32(totalExecutionTime) / float32(len(completedProcesses))
+
+	averageExecutionTime := float32(totalExecutionTime) / float32(len(a.Processes))
 	fmt.Printf("\nTempo médio de execução: %.1f s\n", averageExecutionTime)
 }
 
-// AverageWaitingTime calcula o tempo médio de espera dos processos completados.
-func (r *RoundRobin) AverageWaitingTime() {
-	completedProcesses := r.Schedule()
+func (a *RR) AverageWaitingTime() {
 	var totalWaitTime int
-	for i, process := range completedProcesses {
-		if i != 0 {
-			totalWaitTime += completedProcesses[i-1].ServiceTime
-		}
-		totalWaitTime += process.ArrivedTime
+	for _, process := range a.Processes {
+		totalWaitTime += process.WaitTime
 	}
-	averageWaitingTime := float32(totalWaitTime) / float32(len(completedProcesses))
-	fmt.Printf("\nTempo médio de espera: %.1f s\n", averageWaitingTime)
+
+	averageWaitTime := float32(totalWaitTime) / float32(len(a.Processes))
+	fmt.Printf("\nTempo médio de espera: %.1f s\n", averageWaitTime)
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func contains(slice []Process, process Process) bool {
+	for _, p := range slice {
+		if p.ProcessId == process.ProcessId {
+			return true
+		}
+	}
+	return false
 }

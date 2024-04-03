@@ -13,6 +13,7 @@ type Process struct {
 	Priority    int
 	ServiceTime int
 	ArrivedTime int
+	WaitTime    int
 }
 
 func (p *Process) NewProcess() Process {

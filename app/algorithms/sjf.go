@@ -5,40 +5,56 @@ import (
 	"sort"
 )
 
-type Sjf struct {
+type SJF struct {
 	Processes []Process
 }
 
-func (a *Sjf) ShortestJobFirst() []Process {
+func (s *SJF) ShortestJobFirst() []Process {
 	fmt.Println("\nSHORTEST JOB FIRST")
 
-	sort.SliceStable(a.Processes, func(i, j int) bool {
-		if a.Processes[i].ArrivedTime == a.Processes[j].ArrivedTime {
-			return a.Processes[i].ServiceTime < a.Processes[j].ServiceTime
-		}
-		return a.Processes[i].ArrivedTime < a.Processes[j].ArrivedTime
+	sort.SliceStable(s.Processes, func(i, j int) bool {
+		return s.Processes[i].ServiceTime < s.Processes[j].ServiceTime
 	})
 
-	return a.Processes
+	return s.Processes
 }
 
-func (a *Sjf) AverageExecutionTime() {
+func (s *SJF) AverageExecutionTime() {
 	var totalExecutionTime int
-	for _, process := range a.Processes {
-		totalExecutionTime += int(process.ServiceTime)
+
+	fmt.Println("\nTempo médio de execução:")
+
+	for _, p := range s.Processes {
+		totalExecutionTime += p.ServiceTime
 	}
-	AverageExecutionTime := float32(totalExecutionTime) / float32(len(a.Processes))
-	fmt.Printf("\nTempo médio de execução: %.1f s\n", AverageExecutionTime)
+
+	averageExecutionTime := float32(totalExecutionTime) / float32(len(s.Processes))
+
+	fmt.Printf("%.1f s\n", averageExecutionTime)
 }
 
-func (a *Sjf) AverageWaitingTime() {
-	var totalWaitTime int
-	for i, process := range a.Processes {
-		if i != 0 {
-			totalWaitTime += int(a.Processes[i-1].ServiceTime)
-		}
-		totalWaitTime += int(process.ArrivedTime)
+func (s *SJF) AverageWaitingTime() {
+	fmt.Println("\nTempo médio de espera:")
+
+	if len(s.Processes) == 0 {
+		fmt.Println("Nenhum processo na fila.")
+		return
 	}
-	averageWaitingTime := float32(totalWaitTime) / float32(len(a.Processes))
-	fmt.Printf("\nTempo médio de espera: %.1f s\n", averageWaitingTime)
+
+	var totalWaitingTime int
+
+	totalWaitingTime += 0
+
+	fmt.Printf("Processo %s: %d - %d = %d", s.Processes[0].ProcessId, 0, 0, 0)
+
+	for i := 1; i < len(s.Processes); i++ {
+		waitTime := totalWaitingTime + s.Processes[i-1].ServiceTime
+
+		totalWaitingTime += s.Processes[i-1].ServiceTime
+
+		fmt.Printf(" + Processo %s: %d - %d = %d", s.Processes[i].ProcessId, totalWaitingTime, s.Processes[i].ArrivedTime, waitTime)
+	}
+
+	averageWaitingTime := float32(totalWaitingTime) / float32(len(s.Processes))
+	fmt.Printf(" / %d = %.1f s\n", len(s.Processes), averageWaitingTime)
 }
