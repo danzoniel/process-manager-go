@@ -6,11 +6,6 @@ import (
 	"strconv"
 )
 
-const (
-	noValues     = 0
-	defaultValue = 6
-)
-
 type Process struct {
 	ProcessId   string
 	Priority    uint
