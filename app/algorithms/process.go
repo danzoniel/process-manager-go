@@ -3,14 +3,16 @@ package algorithms
 import (
 	"fmt"
 	"math/rand"
+	"sort"
 	"strconv"
+	"time"
 )
 
 type Process struct {
 	ProcessId   string
-	Priority    uint
-	ServiceTime uint
-	ArrivedTime uint
+	Priority    int
+	ServiceTime int
+	ArrivedTime int
 }
 
 func (p *Process) NewProcess() Process {
@@ -33,16 +35,24 @@ func PrintTable(processess []Process) {
 func (p *Process) RandomizeProcesses(n uint) []Process {
 	fmt.Println("GERANDO", n, "PROCESSOS ALEATÓRIOS")
 	processes := make([]Process, n)
-	counter := 1
+	rand.Seed(time.Now().UnixNano())
 
-	for range n {
-		idStr := strconv.Itoa(int(counter))
-		p.ProcessId = "T" + idStr
-		p.Priority = uint(rand.Intn(int(n)))
-		p.ServiceTime = uint(rand.Intn(int(n)) + 1)
-		p.ArrivedTime = uint(rand.Intn(int(n)))
-		processes[counter-1] = p.NewProcess()
-		counter++
+	for i := uint(0); i < n; i++ {
+		process := Process{
+			Priority:    rand.Intn(int(n)),
+			ServiceTime: rand.Intn(int(n)) + 1,
+			ArrivedTime: rand.Intn(int(n)),
+		}
+		processes[i] = process
+	}
+
+	sort.Slice(processes, func(i, j int) bool {
+		return processes[i].ArrivedTime < processes[j].ArrivedTime
+	})
+
+	for i := range processes {
+		idStr := strconv.Itoa(i + 1)
+		processes[i].ProcessId = "T" + idStr
 	}
 
 	return processes
