@@ -52,41 +52,13 @@ func handleProcesses(processes []algorithms.Process) {
 	algorithms.PrintTable(processes)
 
 	callgFcfs(processes)
-	callSjf(processes)
-	go callRr(processes)
-	callSrtf(processes)
 }
 
 func callgFcfs(processes []algorithms.Process) {
 	fcfs := algorithms.Fcfs{Processes: processes}
 
 	algorithms.PrintTable(fcfs.FirstComeFirtServerd())
-	fcfs.AverageExecutionTime()
-	fcfs.AverageWaitingTime()
-}
 
-func callSjf(processes []algorithms.Process) {
-	sjf := algorithms.SJF{Processes: processes}
-
-	algorithms.PrintTable(sjf.ShortestJobFirst())
-	sjf.AverageExecutionTime()
-	sjf.AverageWaitingTime()
-}
-
-func callRr(processes []algorithms.Process) {
-	// wp := sync.WaitGroup{}
-	rr := algorithms.RR{Processes: processes}
-
-	algorithms.PrintTable(rr.RoundRobin())
-	rr.AverageExecutionTime()
-	rr.AverageWaitingTime()
-	time.Sleep(1 * time.Minute)
-}
-
-func callSrtf(processes []algorithms.Process) {
-	srtf := algorithms.SRTF{Processes: processes}
-
-	algorithms.PrintTable(srtf.ShortestRemainingTimeFirst())
-	srtf.AverageExecutionTime()
-	srtf.AverageWaitingTime()
+	fmt.Println("callFcfs")
+	fmt.Println(processes[0].ProcessId)
 }

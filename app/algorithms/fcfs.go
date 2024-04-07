@@ -2,82 +2,56 @@ package algorithms
 
 import (
 	"fmt"
-	"sort"
 )
 
 type Fcfs struct {
 	Processes []Process
 }
 
-func (a *Fcfs) FirstComeFirtServerd() []Process {
+func (f Fcfs) FirstComeFirtServerd() []Process {
 	fmt.Println("\nFIRST COME FIRST SERVED")
-	processessQuantity := len(a.Processes)
 
-	if processessQuantity <= 1 {
-		return a.Processes
-	}
+	p := make([]Process, len(f.Processes))
+	finishedExecutingAt := p[0].ArrivedTime
 
-	sort.SliceStable(a.Processes, func(i, j int) bool {
-		return a.Processes[i].ArrivedTime < a.Processes[j].ArrivedTime
-	})
-	return a.Processes
-}
+	for i := range f.Processes {
+		p[i] = f.Processes[i].NewProcess()
 
-func (a *Fcfs) AverageExecutionTime() {
-	var res int
-	var finalRes float32
-	var i int
+		// totalExecutionTime(finishedExecutingAt, &p[i])
+		finishedExecutingAt += p[i].ServiceTime
 
-	fmt.Print("\nTempo médio de execução\n")
+		p[i].ProcessTime.finishedExecutingAt = finishedExecutingAt
 
-	for i = range a.Processes {
-		res += a.Processes[i].ServiceTime
-		resMinusArrivedTime := res - a.Processes[i].ArrivedTime
-		finalRes = float32(finalRes) + float32(resMinusArrivedTime)
+		p[i].ProcessTime.totalExecutionTime = p[i].ProcessTime.finishedExecutingAt - p[i].ArrivedTime
 
 		if i > 0 {
-			fmt.Print(" + ")
-		}
-		fmt.Printf("Processo %s: %d - %d = %d", a.Processes[i].ProcessId, res, a.Processes[i].ArrivedTime, resMinusArrivedTime)
-	}
-
-	processesLength := float32(len(a.Processes))
-	averageWaitTime := finalRes / processesLength
-
-	fmt.Printf(" / %d = %.1f s\n", len(a.Processes), averageWaitTime)
-}
-
-func (a *Fcfs) AverageWaitingTime() {
-	fmt.Println("\n\nTempo médio de espera:")
-
-	if len(a.Processes) == 0 {
-		fmt.Println("Nenhum processo na fila.")
-		return
-	}
-
-	var totalWaitTime int
-	var finalRes float32
-
-	fmt.Printf("Processo %s: %d - %d = %d", a.Processes[0].ProcessId, 0, 0, 0)
-	totalWaitTime += 0
-	finalRes += 0
-
-	for i := 0; i < len(a.Processes); i++ {
-
-		if i == 0 {
-
-		} else {
-
-			waitTime := totalWaitTime + a.Processes[i-1].ServiceTime - a.Processes[i].ArrivedTime
-			totalWaitTime += a.Processes[i-1].ServiceTime
-			finalRes += float32(waitTime)
-			fmt.Printf(" + Processo %s: %d - %d = %d", a.Processes[i].ProcessId, totalWaitTime, a.Processes[i].ArrivedTime, waitTime)
+			p[i].ProcessTime.totalWaitingTime = p[i-1].ProcessTime.finishedExecutingAt - p[i].ArrivedTime
 		}
 
+		fmt.Println("total execution time for process ", p[i].ProcessId, p[i].ProcessTime.finishedExecutingAt)
+		fmt.Println("total waiting time for process ", p[i].ProcessId, p[i].ProcessTime.totalWaitingTime)
 	}
 
-	processesLength := float32(len(a.Processes))
-	averageWaitTime := finalRes / processesLength
+	fmt.Println(p)
 
-	fmt.Printf(" / %d = %.1f s\n", len(a.Processes), averageWaitTime)
+	return nil
 }
+
+// func totalExecutionTime(finishedExecutingAt int, p *Process) {
+// 	finishedExecutingAt += p.ServiceTime
+
+// 	p.ProcessTime.finishedExecutingAt = finishedExecutingAt
+
+// 	p.ProcessTime.totalExecutionTime = p.ProcessTime.finishedExecutingAt - p.ArrivedTime
+// }
+
+// func executeProcess(process *Process) *Process {
+// 	fmt.Println("arrived time:", process.ArrivedTime)
+
+// 	p := process.ProcessTime
+// 	p.totalExecutionTime = process.ArrivedTime
+// 	fmt.p
+// 	return &Process{
+// 		ProcessTime: p,
+// 	}
+// }

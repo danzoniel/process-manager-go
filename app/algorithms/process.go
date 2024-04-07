@@ -13,7 +13,17 @@ type Process struct {
 	Priority    int
 	ServiceTime int
 	ArrivedTime int
-	WaitTime    int
+	ProcessTime ProcessTime
+	AverageProcessTimer
+}
+
+type ProcessTime struct {
+	// startedExecutingAt  int
+	finishedExecutingAt int
+	// startedWaitingAt    int
+	// finishedWaitingAt   int
+	totalExecutionTime int
+	totalWaitingTime   int
 }
 
 func (p *Process) NewProcess() Process {
@@ -22,6 +32,7 @@ func (p *Process) NewProcess() Process {
 		Priority:    p.Priority,
 		ServiceTime: p.ServiceTime,
 		ArrivedTime: p.ArrivedTime,
+		ProcessTime: p.ProcessTime,
 	}
 }
 
@@ -36,11 +47,11 @@ func PrintTable(processess []Process) {
 func (p *Process) RandomizeProcesses(n uint) []Process {
 	fmt.Println("GERANDO", n, "PROCESSOS ALEATÓRIOS")
 	processes := make([]Process, n)
-	rand.Seed(time.Now().UnixNano())
+	rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	for i := uint(0); i < n; i++ {
 		process := Process{
-			Priority:    rand.Intn(int(n)),
+			Priority:    rand.Intn(int(n)) + 1,
 			ServiceTime: rand.Intn(int(n)) + 1,
 			ArrivedTime: rand.Intn(int(n)),
 		}
