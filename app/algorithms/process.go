@@ -69,3 +69,27 @@ func (p *Process) RandomizeProcesses(n uint) []Process {
 
 	return processes
 }
+
+func CalculateAverageProcessTime(processes []Process) {
+	totalProcessTime := 0
+
+	for i := range processes {
+		totalProcessTime += processes[i].ProcessTime.totalExecutionTime
+	}
+
+	averageTotalProcessTime := float64(totalProcessTime) / float64(len(processes))
+
+	fmt.Printf("\nTempo médio de processo: %.1fs\n", averageTotalProcessTime)
+}
+
+func CalculateAverageWaitTime(processes []Process) {
+	totalWaitTime := 0
+
+	for i := range processes {
+		totalWaitTime += processes[i].ProcessTime.totalWaitingTime
+	}
+
+	averageTotalWaitTime := float64(totalWaitTime) / float64(len(processes))
+
+	fmt.Printf("\nTempo médio de espera: %.1fs\n", averageTotalWaitTime)
+}
