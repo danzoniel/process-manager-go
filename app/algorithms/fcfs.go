@@ -5,10 +5,11 @@ import (
 )
 
 type Fcfs struct {
-	Processes []Process
+	Processes        []Process
+	TotalProcessTime int
 }
 
-func (f Fcfs) FirstComeFirtServerd() []Process {
+func (f *Fcfs) FirstComeFirtServerd() []Process {
 	fmt.Println("\nFIRST COME FIRST SERVED")
 
 	p := make([]Process, len(f.Processes))
@@ -28,8 +29,26 @@ func (f Fcfs) FirstComeFirtServerd() []Process {
 		}
 	}
 
+	f.TotalProcessTime = p[len(f.Processes)-1].ProcessTime.finishedExecutingAt
+
 	CalculateAverageProcessTime(p)
 	CalculateAverageWaitTime(p)
 
+	fmt.Println(p)
 	return nil
+}
+
+func (f *Fcfs) PrintTable() {
+
+	fmt.Println("\nGráfico First Come, First Served\n")
+
+	maxYScale := len(f.Processes) * 2
+	maxXScale := len(f.Processes) * 18
+
+	scale := NewAxisScale(0, maxXScale, 0, maxYScale)
+
+	DrawYAxis(scale, f.Processes)
+
+	DrawXAxis(scale, f.TotalProcessTime, len(f.Processes))
+
 }

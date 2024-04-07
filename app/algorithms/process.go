@@ -14,7 +14,6 @@ type Process struct {
 	ServiceTime int
 	ArrivedTime int
 	ProcessTime ProcessTime
-	AverageProcessTimer
 }
 
 type ProcessTime struct {

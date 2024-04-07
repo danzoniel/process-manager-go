@@ -88,5 +88,6 @@ func handleProcesses(processes []algorithms.Process) {
 func callFcfs(processes []algorithms.Process) {
 	fcfs := algorithms.Fcfs{Processes: processes}
 
-	algorithms.PrintTable(fcfs.FirstComeFirtServerd())
+	fcfs.FirstComeFirtServerd()
+	fcfs.PrintTable()
 }
