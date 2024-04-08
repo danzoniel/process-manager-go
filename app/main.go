@@ -83,6 +83,7 @@ func handleProcesses(processes []algorithms.Process) {
 	algorithms.PrintTable(processes)
 
 	callFcfs(processes)
+	callSjf(processes)
 }
 
 func callFcfs(processes []algorithms.Process) {
@@ -90,4 +91,11 @@ func callFcfs(processes []algorithms.Process) {
 
 	fcfs.FirstComeFirtServerd()
 	fcfs.PrintTable()
+}
+
+func callSjf(processes []algorithms.Process) {
+	sjf := algorithms.Sjf{Processes: processes}
+
+	sjf.ShortestJobFirst()
+	// sjf.PrintTable()
 }

@@ -34,7 +34,6 @@ func (f *Fcfs) FirstComeFirtServerd() []Process {
 	CalculateAverageProcessTime(p)
 	CalculateAverageWaitTime(p)
 
-	fmt.Println(p)
 	return nil
 }
 
