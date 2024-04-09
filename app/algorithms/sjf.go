@@ -45,7 +45,7 @@ func (s *Sjf) ShortestJobFirst() []Process {
 			index := 0
 			fmt.Println("Valor do shortest job arrived time: ", shortestJob.ArrivedTime)
 			for i, job := range available {
-				if job.ServiceTime < shortestJob.ServiceTime || i == 0{
+				if job.ServiceTime < shortestJob.ServiceTime || i == 0 {
 					index = i
 					shortestJob = job
 				}

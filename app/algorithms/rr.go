@@ -18,17 +18,27 @@ func (s *Rr) RoundRobin() []Process {
 	available := make([]Process, 0)
 	nextJob := Process{}
 	actualInstant := 0
-
+	tempNextJob := Process{}
+	waitingProcessess := make([]Process, 0)
 	numberOfProcesses := len(s.Processes) - 1
-	//Cria um novo array com todos os processos
+
+	//Cria um novo array com todos os processos e conta o tempo total de todos os processos
 	for i := 0; i <= numberOfProcesses; i++ {
 		p[i] = s.Processes[i].NewProcess()
+		s.TotalProcessTime += p[i].ServiceTime
 	}
 
-	for i := 0; i <= numberOfProcesses; i++ {
+	fmt.Println("Tempo total de todos os processos somados: ", s.TotalProcessTime)
+
+
+	fmt.Println("Processos recebidos: ", s.Processes)
+
+	for  actualInstant < s.TotalProcessTime  {
+		
+
 
 		//Cria um novo array com os processos disponíveis para o instante atual
-		waitingProcessess := make([]Process, 0)
+		waitingProcessess = make([]Process, 0)
 		for i := range p {
 			if p[i].ArrivedTime <= actualInstant {
 				available = append(available, p[i])
@@ -36,6 +46,16 @@ func (s *Rr) RoundRobin() []Process {
 				waitingProcessess = append(waitingProcessess, p[i])
 			}
 		}
+
+		fmt.Println("Processo temporário que talvez volte pra fila de espera: ", tempNextJob)
+
+		if tempNextJob.ServiceTime > 0 {
+			fmt.Println("Processo temporário que tá voltando pra lista de espera: ", tempNextJob)
+
+			available = append(available, tempNextJob)
+			// waitingProcessess = append(waitingProcessess, tempNextJob)
+		}
+
 
 		p = nil
 		p = waitingProcessess
@@ -46,11 +66,14 @@ func (s *Rr) RoundRobin() []Process {
 		//Procura o menor tempo entre os disponíveis
 		index := 0
 		// fmt.Println("Valor de chegada do próximo processo a ser executado: ", nextJob.ArrivedTime)
+		//Processo não pode olhar para o tempo de chegada todas às vezes. Encontrar a excessão.
 		for i, job := range available {
-			if job.ArrivedTime < nextJob.ArrivedTime || i == 0 {
-				index = i
-				nextJob = job
-			}
+			// if job.ArrivedTime == nextJob.ArrivedTime {
+				if i == 0 {
+					index = i
+					nextJob = job
+				}
+			// }
 		}
 
 		fmt.Println("Processo que será executado: ", nextJob)
@@ -66,17 +89,25 @@ func (s *Rr) RoundRobin() []Process {
 
 		nextJob.ServiceTime -= s.Quantum
 
-		fmt.Println("Next Job depois do processa o quantum", nextJob)
+		fmt.Println("Next Job depois de processar o quantum", nextJob)
 
 		//Encontra o instante de término do processo
-		nextJob.ProcessTime.finishedExecutingAt = actualInstant + nextJob.ServiceTime
+		nextJob.ProcessTime.finishedExecutingAt = actualInstant + s.Quantum
 
 		//Incrementa o instante atual do algoritmo
 		actualInstant = nextJob.ProcessTime.finishedExecutingAt
 
-		if nextJob.ServiceTime > 0 {
+		//Guarda o next job como um processo temporário
+		tempNextJob = nextJob
 
-		}
+		// fmt.Println("Processo temporário que talvez volte pra fila de espera: ", nextJob)
+
+		// if nextJob.ServiceTime > 0 {
+		// 	fmt.Println("Processo temporário que tá voltando pra lista de espera: ", nextJob)
+
+		// 	available = append(available, nextJob)
+		// 	// waitingProcessess = append(waitingProcessess, tempNextJob)
+		// }
 
 		fmt.Println("Instante que o processo atual terminou de executar: ", nextJob.ProcessTime.finishedExecutingAt)
 		fmt.Println("Instante atual: ", actualInstant)
@@ -88,6 +119,12 @@ func (s *Rr) RoundRobin() []Process {
 		available = append(available[:index], available[index+1:]...)
 		fmt.Println("Lista de disponíveis depois da remoção: ", available)
 
+		//ToDo aumentar o loop total, pois o número de processos não reresenta necessariamente o número de vezes que o
+		// looop precisa executar
+
+		//ToDo dinamizar o Quantum para representar o momento atual correto 
+		
+		//ToDo rodar enquanto o instante atual <= que instante total
 	}
 
 	return nil
