@@ -74,6 +74,10 @@ func (s *Rr) RoundRobin() []Process {
 		//Incrementa o instante atual do algoritmo
 		actualInstant = nextJob.ProcessTime.finishedExecutingAt
 
+		if nextJob.ServiceTime > 0 {
+
+		}
+
 		fmt.Println("Instante que o processo atual terminou de executar: ", nextJob.ProcessTime.finishedExecutingAt)
 		fmt.Println("Instante atual: ", actualInstant)
 
