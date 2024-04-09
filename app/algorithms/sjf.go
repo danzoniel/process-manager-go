@@ -15,16 +15,15 @@ func (s *Sjf) ShortestJobFirst() []Process {
 	p := make([]Process, len(s.Processes))
 	available := make([]Process, 0)
 	shortestJob := Process{}
-
 	actualInstant := 0
 
+	numberOfProcesses := len(s.Processes)-1
 	//Cria um novo array com todos os processos
-	for i := range s.Processes {
+	for i := 0; i <= numberOfProcesses; i++ {
 		p[i] = s.Processes[i].NewProcess()
 	}
 
-	n := 0
-	for n <= 4 {	
+	for i:= 0; i <= numberOfProcesses; i++  {	
 
 			//Cria um novo array com os processos disponíveis para o instante atual
 			waitingProcessess := make([]Process, 0)
@@ -74,20 +73,8 @@ func (s *Sjf) ShortestJobFirst() []Process {
 			available = append(available[:index], available[index+1:]...)
 			fmt.Println("Lista de disponíveis depois da remoção: ", available)
 
-			n++
 		}
 
 		return nil
 	}
 
-// func removeMatchedElements(slice []Process, match int) []int {
-// 	result := []int{}
-
-// 	for _, element := range slice {
-// 		if element != match {
-// 			result = append(result, element)
-// 		}
-// 	}
-
-// 	return result
-// }
