@@ -2,82 +2,52 @@ package algorithms
 
 import (
 	"fmt"
-	"sort"
 )
 
 type Fcfs struct {
-	Processes []Process
+	Processes        []Process
+	TotalProcessTime int
 }
 
-func (a *Fcfs) FirstComeFirtServerd() []Process {
+func (f *Fcfs) FirstComeFirtServerd() []Process {
 	fmt.Println("\nFIRST COME FIRST SERVED")
-	processessQuantity := len(a.Processes)
 
-	if processessQuantity <= 1 {
-		return a.Processes
-	}
+	p := make([]Process, len(f.Processes))
+	finishedExecutingAt := p[0].ArrivedTime
 
-	sort.SliceStable(a.Processes, func(i, j int) bool {
-		return a.Processes[i].ArrivedTime < a.Processes[j].ArrivedTime
-	})
-	return a.Processes
-}
+	for i := range f.Processes {
+		p[i] = f.Processes[i].NewProcess()
 
-func (a *Fcfs) AverageExecutionTime() {
-	var res int
-	var finalRes float32
-	var i int
+		finishedExecutingAt += p[i].ServiceTime
 
-	fmt.Print("\nTempo médio de execução\n")
+		p[i].ProcessTime.finishedExecutingAt = finishedExecutingAt
 
-	for i = range a.Processes {
-		res += a.Processes[i].ServiceTime
-		resMinusArrivedTime := res - a.Processes[i].ArrivedTime
-		finalRes = float32(finalRes) + float32(resMinusArrivedTime)
+		p[i].ProcessTime.totalExecutionTime = p[i].ProcessTime.finishedExecutingAt - p[i].ArrivedTime
 
 		if i > 0 {
-			fmt.Print(" + ")
+			p[i].ProcessTime.totalWaitingTime = p[i-1].ProcessTime.finishedExecutingAt - p[i].ArrivedTime
 		}
-		fmt.Printf("Processo %s: %d - %d = %d", a.Processes[i].ProcessId, res, a.Processes[i].ArrivedTime, resMinusArrivedTime)
 	}
 
-	processesLength := float32(len(a.Processes))
-	averageWaitTime := finalRes / processesLength
+	f.TotalProcessTime = p[len(f.Processes)-1].ProcessTime.finishedExecutingAt
 
-	fmt.Printf(" / %d = %.1f s\n", len(a.Processes), averageWaitTime)
+	CalculateAverageProcessTime(p)
+	CalculateAverageWaitTime(p)
+
+	return nil
 }
 
-func (a *Fcfs) AverageWaitingTime() {
-	fmt.Println("\n\nTempo médio de espera:")
+func (f *Fcfs) PrintTable() {
 
-	if len(a.Processes) == 0 {
-		fmt.Println("Nenhum processo na fila.")
-		return
-	}
+	fmt.Println("\nGráfico First Come, First Served\n")
 
-	var totalWaitTime int
-	var finalRes float32
+	maxYScale := len(f.Processes) * 2
+	maxXScale := len(f.Processes) * 18
 
-	fmt.Printf("Processo %s: %d - %d = %d", a.Processes[0].ProcessId, 0, 0, 0)
-	totalWaitTime += 0
-	finalRes += 0
+	scale := NewAxisScale(0, maxXScale, 0, maxYScale)
 
-	for i := 0; i < len(a.Processes); i++ {
+	DrawYAxis(scale, f.Processes)
 
-		if i == 0 {
+	DrawXAxis(scale, f.TotalProcessTime, len(f.Processes))
 
-		} else {
-
-			waitTime := totalWaitTime + a.Processes[i-1].ServiceTime - a.Processes[i].ArrivedTime
-			totalWaitTime += a.Processes[i-1].ServiceTime
-			finalRes += float32(waitTime)
-			fmt.Printf(" + Processo %s: %d - %d = %d", a.Processes[i].ProcessId, totalWaitTime, a.Processes[i].ArrivedTime, waitTime)
-		}
-
-	}
-
-	processesLength := float32(len(a.Processes))
-	averageWaitTime := finalRes / processesLength
-
-	fmt.Printf(" / %d = %.1f s\n", len(a.Processes), averageWaitTime)
 }
