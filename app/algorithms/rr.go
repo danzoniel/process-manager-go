@@ -78,8 +78,6 @@ func (s *Rr) RoundRobin() {
 			aux = append(aux, nextJob)
 		}
 
-		//Encontra o instante de término do processo
-
 		//Incrementa o instante atual do algoritmo
 		actualInstant = nextJob.ProcessTime.finishedExecutingAt
 
@@ -94,21 +92,8 @@ func (s *Rr) RoundRobin() {
 		//Remove o processo da lista de processos disponíveis
 		available = append(available[:index], available[index+1:]...)
 	}
-	fmt.Println(aux)
 
 	Graph(res)
 	CalculateAverageProcessTime(aux)
 	CalculateAverageWaitTime(p)
-}
-
-func addOrUpdateJob(res []Process, tempNextJob Process) []Process {
-	// Verificar se já existe um Job com o mesmo ProcessId
-	for i, j := range res {
-		if j.ProcessId == tempNextJob.ProcessId {
-			res = append(res[:i], res[i+1:]...)
-		}
-	}
-	// Adicionar o novo elemento ao final do array
-	res = append(res, tempNextJob)
-	return res
 }
