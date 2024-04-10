@@ -34,8 +34,6 @@ func (s *Rr) RoundRobin() []Process {
 	fmt.Println("Processos recebidos: ", s.Processes)
 
 	for  actualInstant < s.TotalProcessTime  {
-		
-
 
 		//Cria um novo array com os processos disponíveis para o instante atual
 		waitingProcessess = make([]Process, 0)
@@ -67,12 +65,10 @@ func (s *Rr) RoundRobin() []Process {
 		index := 0
 		//Processo não pode olhar para o tempo de chegada todas às vezes. Encontrar a excessão.
 		for i, job := range available {
-			// if job.ArrivedTime == nextJob.ArrivedTime {
-				if i == 0 {
-					index = i
-					nextJob = job
-				}
-			// }
+			if i == 0 {
+				index = i
+				nextJob = job
+			}
 		}
 
 		fmt.Println("Processo que será executado: ", nextJob)
@@ -86,12 +82,18 @@ func (s *Rr) RoundRobin() []Process {
 		//Tira 2 quantum do processo, remove ele da fila e o coloca ao final da fila se tempo de serviço - 2 > 0
 		fmt.Println("Next Job antes do processa o quantum", nextJob)
 
+		paceJob := nextJob.ServiceTime - (nextJob.ServiceTime - s.Quantum)
 		nextJob.ServiceTime -= s.Quantum
 
+		fmt.Println("O processo andou ", paceJob, "quantums")
 		fmt.Println("Next Job depois de processar o quantum", nextJob)
 
 		//Encontra o instante de término do processo
+		// if  nextJob.ServiceTime < s.Quantum && nextJob.ServiceTime != 0 {
+		// 	nextJob.ProcessTime.finishedExecutingAt = actualInstant + nextJob.ServiceTime
+		// } else {
 		nextJob.ProcessTime.finishedExecutingAt = actualInstant + s.Quantum
+		// }
 
 		//Incrementa o instante atual do algoritmo
 		actualInstant = nextJob.ProcessTime.finishedExecutingAt
