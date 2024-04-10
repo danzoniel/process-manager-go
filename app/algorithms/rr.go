@@ -30,10 +30,9 @@ func (s *Rr) RoundRobin() []Process {
 
 	fmt.Println("Tempo total de todos os processos somados: ", s.TotalProcessTime)
 
-
 	fmt.Println("Processos recebidos: ", s.Processes)
 
-	for  actualInstant < s.TotalProcessTime  {
+	for actualInstant < s.TotalProcessTime {
 
 		//Cria um novo array com os processos disponíveis para o instante atual
 		waitingProcessess = make([]Process, 0)
@@ -53,7 +52,6 @@ func (s *Rr) RoundRobin() []Process {
 			available = append(available, tempNextJob)
 			// waitingProcessess = append(waitingProcessess, tempNextJob)
 		}
-
 
 		p = nil
 		p = waitingProcessess
@@ -82,17 +80,27 @@ func (s *Rr) RoundRobin() []Process {
 		//Tira 2 quantum do processo, remove ele da fila e o coloca ao final da fila se tempo de serviço - 2 > 0
 		fmt.Println("Next Job antes do processa o quantum", nextJob)
 
-		paceJob := nextJob.ServiceTime - (nextJob.ServiceTime - s.Quantum)
 		nextJob.ServiceTime -= s.Quantum
 
-		fmt.Println("O processo andou ", paceJob, "quantums")
+		fmt.Println("next time service", nextJob.ServiceTime)
+		if nextJob.ServiceTime < 0 {
+			fmt.Println("o tempo de serviço - quantum é menor que zero", nextJob)
+			fmt.Println("instante atual", actualInstant)
+			aux := s.Quantum + nextJob.ServiceTime
+			fmt.Println("aux:", aux)
+			nextJob.ProcessTime.finishedExecutingAt = actualInstant + aux
+			fmt.Println("terminou de executar em :", nextJob.ProcessTime.finishedExecutingAt)
+
+		} else {
+			nextJob.ProcessTime.finishedExecutingAt = actualInstant + s.Quantum
+		}
+
 		fmt.Println("Next Job depois de processar o quantum", nextJob)
 
 		//Encontra o instante de término do processo
 		// if  nextJob.ServiceTime < s.Quantum && nextJob.ServiceTime != 0 {
 		// 	nextJob.ProcessTime.finishedExecutingAt = actualInstant + nextJob.ServiceTime
 		// } else {
-		nextJob.ProcessTime.finishedExecutingAt = actualInstant + s.Quantum
 		// }
 
 		//Incrementa o instante atual do algoritmo
@@ -111,8 +119,7 @@ func (s *Rr) RoundRobin() []Process {
 		available = append(available[:index], available[index+1:]...)
 		fmt.Println("Lista de disponíveis depois da remoção: ", available)
 
-
-		//ToDo dinamizar o Quantum para representar o momento atual correto 
+		//ToDo dinamizar o Quantum para representar o momento atual correto
 
 	}
 
