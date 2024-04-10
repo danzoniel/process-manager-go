@@ -13,6 +13,7 @@ type Process struct {
 	Priority    int
 	ServiceTime int
 	ArrivedTime int
+	Done        bool
 	ProcessTime ProcessTime
 }
 
@@ -81,7 +82,6 @@ func CalculateAverageProcessTime(processes []Process) {
 
 func CalculateAverageWaitTime(processes []Process) {
 	totalWaitTime := 0
-
 	for i := range processes {
 		totalWaitTime += processes[i].ProcessTime.totalWaitingTime
 	}
