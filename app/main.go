@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	p := algorithms.Process{}
 	processes := []algorithms.Process{
 		{
 			ProcessId:   "t1",
@@ -56,23 +57,22 @@ func main() {
 	select {
 	case input := <-userInput:
 		if input == "" {
-			fmt.Println("Nenhum número de processos fornecido. Gerando 5 processos aleatórios.")
-			// processes := p.RandomizeProcesses(5)
+			fmt.Println("Nenhum número de processos fornecido. Gerando 5 processos default.")
 			handleProcesses(processes)
 		} else {
 			numProcesses, err := strconv.Atoi(input)
 			if err != nil || numProcesses > 10 {
 				fmt.Println("Entrada inválida ou excede o limite de 10 processos. Gerando 5 processos aleatórios.")
-				// processes := p.RandomizeProcesses(5)
+				processes = p.RandomizeProcesses(5)
 				handleProcesses(processes)
 			} else {
-				// processes := p.RandomizeProcesses(uint(numProcesses))
+				processes = p.RandomizeProcesses(uint(numProcesses))
 				handleProcesses(processes)
 			}
 		}
-	case <-time.After(10 * time.Second):
+	case <-time.After(5 * time.Second):
 		fmt.Println("Tempo limite atingido. Gerando 5 processos aleatórios.")
-		// processes := p.RandomizeProcesses(5)
+		processes = p.RandomizeProcesses(5)
 		handleProcesses(processes)
 	}
 }
@@ -83,10 +83,11 @@ func handleProcesses(processes []algorithms.Process) {
 	algorithms.PrintTable(processes)
 
 	callFcfs(processes)
-	// callSjf(processes)
-	// callRr(processes)
-	// callPrioC(processes)
+	callSjf(processes)
+	callRr(processes)
+	callPrioC(processes)
 	callPrioP(processes)
+	// callSrtf(processes)
 }
 
 func callFcfs(processes []algorithms.Process) {
@@ -95,27 +96,33 @@ func callFcfs(processes []algorithms.Process) {
 	fcfs.FirstComeFirtServerd()
 }
 
-// func callSjf(processes []algorithms.Process) {
-// 	sjf := algorithms.Sjf{Processes: processes}
+func callSjf(processes []algorithms.Process) {
+	sjf := algorithms.Sjf{Processes: processes}
 
-// 	sjf.ShortestJobFirst()
-// 	// sjf.PrintTable()
-// }
+	sjf.ShortestJobFirst()
+	// sjf.PrintTable()
+}
 
-// func callRr(processes []algorithms.Process) {
-// 	rr := algorithms.Rr{Processes: processes}
+func callRr(processes []algorithms.Process) {
+	rr := algorithms.Rr{Processes: processes}
 
-// 	rr.RoundRobin()
-// }
+	rr.RoundRobin()
+}
 
-// func callPrioC(processes []algorithms.Process) {
-// 	prioc := algorithms.PrioC{Processes: processes}
+func callPrioC(processes []algorithms.Process) {
+	prioc := algorithms.PrioC{Processes: processes}
 
-// 	prioc.PrioC()
-// }
+	prioc.PrioC()
+}
 
 func callPrioP(processes []algorithms.Process) {
 	priop := algorithms.PrioP{Processes: processes}
 
 	priop.PrioP()
 }
+
+// func callSrtf(processes []algorithms.Process) {
+// 	srtf := algorithms.Srtf{Processes: processes}
+
+// 	srtf.ShortestRemainingJobFirst()
+// }

@@ -18,6 +18,7 @@ type Process struct {
 
 type ProcessTime struct {
 	finishedExecutingAt int
+	startedExecutingAt  int
 	totalExecutionTime  int
 	totalWaitingTime    int
 }
@@ -88,4 +89,10 @@ func CalculateAverageWaitTime(processes []Process) {
 	averageTotalWaitTime := float64(totalWaitTime) / float64(len(processes))
 
 	fmt.Printf("\nTempo médio de espera: %.1fs\n", averageTotalWaitTime)
+}
+
+func Graph(p []Process) {
+	for i := range p {
+		fmt.Printf("\nProcesso %s, Chegou: %d, Começou: %d, Terminou: %d\n", p[i].ProcessId, p[i].ArrivedTime, p[i].ProcessTime.startedExecutingAt, p[i].ProcessTime.finishedExecutingAt)
+	}
 }

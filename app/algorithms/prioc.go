@@ -9,13 +9,14 @@ type PrioC struct {
 	TotalProcessTime int
 }
 
-func (s *PrioC) PrioC() []Process {
+func (s *PrioC) PrioC() {
 	fmt.Println("\nPRIOc")
 
 	p := make([]Process, len(s.Processes))
 	available := make([]Process, 0)
-	shortestJob := Process{}
+	nextJob := Process{}
 	actualInstant := 0
+	res := make([]Process, 0)
 
 	numberOfProcesses := len(s.Processes) - 1
 	//Cria um novo array com todos os processos
@@ -38,42 +39,50 @@ func (s *PrioC) PrioC() []Process {
 		p = nil
 		p = waitingProcessess
 
-		fmt.Println("Processos disponíveis para executar", available)
-		fmt.Println("Processos na lista de espera", p)
+		// fmt.Println("Processos disponíveis para executar", available)
+		// fmt.Println("Processos na lista de espera", p)
 
 		//Procura a maior prioridade entre os disponíveis
 		index := 0
-		fmt.Println("Valor da prioridade: ", shortestJob.Priority)
+		// fmt.Println("Valor da prioridade: ", shortestJob.Priority)
 		for i, job := range available {
-			if job.Priority > shortestJob.Priority || i == 0 {
+			if job.Priority > nextJob.Priority || i == 0 {
 				index = i
-				shortestJob = job
+				nextJob = job
 			}
 		}
 
-		fmt.Println("Processo com o menor tempo de serviço que será executado: ", shortestJob)
+		// fmt.Println("Processo com o menor tempo de serviço que será executado: ", shortestJob)
 
-		fmt.Println("Index do processo que será removido da lista de disponíveis: ", index)
+		// fmt.Println("Index do processo que será removido da lista de disponíveis: ", index)
 
-		fmt.Println("Instante atual antes do processo: ", actualInstant)
+		// fmt.Println("Instante atual antes do processo: ", actualInstant)
 
 		//Encontra o instante de término do processo
-		shortestJob.ProcessTime.finishedExecutingAt = actualInstant + shortestJob.ServiceTime
+		nextJob.ProcessTime.finishedExecutingAt = actualInstant + nextJob.ServiceTime
 
 		//Incrementa o instante atual do algoritmo
-		actualInstant = shortestJob.ProcessTime.finishedExecutingAt
+		actualInstant = nextJob.ProcessTime.finishedExecutingAt
 
-		fmt.Println("Instante que o processo atual terminou de executar: ", shortestJob.ProcessTime.finishedExecutingAt)
-		fmt.Println("Instante atual: ", actualInstant)
+		tempNextJob := nextJob
+
+		// fmt.Println("Instante que o processo atual terminou de executar: ", shortestJob.ProcessTime.finishedExecutingAt)
+		// fmt.Println("Instante atual: ", actualInstant)
 
 		//Limpa o processo
-		shortestJob = Process{}
+		nextJob = Process{}
+
+		tempNextJob.ProcessTime.totalExecutionTime = tempNextJob.ProcessTime.finishedExecutingAt - tempNextJob.ArrivedTime
+
+		res = append(res, tempNextJob)
 
 		//Remove o processo da lista de processos disponíveis
 		available = append(available[:index], available[index+1:]...)
-		fmt.Println("Lista de disponíveis depois da remoção: ", available)
+		// fmt.Println("Lista de disponíveis depois da remoção: ", available)
 
 	}
 
-	return nil
+	Graph(res)
+	CalculateAverageProcessTime(res)
+	CalculateAverageWaitTime(p)
 }

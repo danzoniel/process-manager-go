@@ -9,7 +9,7 @@ type Fcfs struct {
 	TotalProcessTime int
 }
 
-func (f *Fcfs) FirstComeFirtServerd() []Process {
+func (f *Fcfs) FirstComeFirtServerd() {
 	fmt.Println("\nFIRST COME FIRST SERVED")
 
 	p := make([]Process, len(f.Processes))
@@ -31,23 +31,7 @@ func (f *Fcfs) FirstComeFirtServerd() []Process {
 
 	f.TotalProcessTime = p[len(f.Processes)-1].ProcessTime.finishedExecutingAt
 
+	Graph(p)
 	CalculateAverageProcessTime(p)
 	CalculateAverageWaitTime(p)
-
-	return nil
-}
-
-func (f *Fcfs) PrintTable() {
-
-	fmt.Println("\nGráfico First Come, First Served\n")
-
-	maxYScale := len(f.Processes) * 2
-	maxXScale := len(f.Processes) * 18
-
-	scale := NewAxisScale(0, maxXScale, 0, maxYScale)
-
-	DrawYAxis(scale, f.Processes)
-
-	DrawXAxis(scale, f.TotalProcessTime, len(f.Processes))
-
 }

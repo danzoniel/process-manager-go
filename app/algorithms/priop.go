@@ -9,7 +9,7 @@ type PrioP struct {
 	TotalProcessTime int
 }
 
-func (s *PrioP) PrioP() []Process {
+func (s *PrioP) PrioP() {
 	fmt.Println("\nPRIOp")
 
 	p := make([]Process, len(s.Processes))
@@ -20,6 +20,7 @@ func (s *PrioP) PrioP() []Process {
 	waitingProcessess := make([]Process, 0)
 	numberOfProcesses := len(s.Processes) - 1
 	moment := 1
+	res := make([]Process, 0)
 
 	//Cria um novo array com todos os processos e conta o tempo total de todos os processos
 	for i := 0; i <= numberOfProcesses; i++ {
@@ -68,7 +69,7 @@ func (s *PrioP) PrioP() []Process {
 			}
 		}
 
-		fmt.Println("Processo que será executado: ", nextJob)
+		// fmt.Println("Processo que será executado: ", nextJob)
 
 		// fmt.Println("Index do processo que será removido da lista de disponíveis: ", index)
 
@@ -81,7 +82,7 @@ func (s *PrioP) PrioP() []Process {
 
 		//Checa para ver se há algum processo disponível que merece interromper
 
-		fmt.Println("Next Job depois de processar o quantum", nextJob)
+		// fmt.Println("Next Job depois de processar o quantum", nextJob)
 
 		//Encontra o instante de término do processo
 
@@ -92,10 +93,14 @@ func (s *PrioP) PrioP() []Process {
 		tempNextJob = nextJob
 
 		// fmt.Println("Instante que o processo atual terminou de executar: ", nextJob.ProcessTime.finishedExecutingAt)
-		fmt.Println("Instante atual: ", actualInstant)
+		// fmt.Println("Instante atual: ", actualInstant)
 
 		//Limpa o processo
 		nextJob = Process{}
+
+		tempNextJob.ProcessTime.totalExecutionTime = tempNextJob.ProcessTime.finishedExecutingAt - tempNextJob.ArrivedTime
+
+		res = append(res, tempNextJob)
 
 		//Remove o processo da lista de processos disponíveis
 		available = append(available[:index], available[index+1:]...)
@@ -103,5 +108,7 @@ func (s *PrioP) PrioP() []Process {
 
 	}
 
-	return nil
+	Graph(res)
+	CalculateAverageProcessTime(p)
+	CalculateAverageWaitTime(p)
 }
