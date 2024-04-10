@@ -87,7 +87,7 @@ func handleProcesses(processes []algorithms.Process) {
 	callRr(processes)
 	callPrioC(processes)
 	callPrioP(processes)
-	// callSrtf(processes)
+	callSrtf(processes)
 }
 
 func callFcfs(processes []algorithms.Process) {
@@ -100,7 +100,6 @@ func callSjf(processes []algorithms.Process) {
 	sjf := algorithms.Sjf{Processes: processes}
 
 	sjf.ShortestJobFirst()
-	// sjf.PrintTable()
 }
 
 func callRr(processes []algorithms.Process) {
@@ -121,8 +120,8 @@ func callPrioP(processes []algorithms.Process) {
 	priop.PrioP()
 }
 
-// func callSrtf(processes []algorithms.Process) {
-// 	srtf := algorithms.Srtf{Processes: processes}
+func callSrtf(processes []algorithms.Process) {
+	srtf := algorithms.Srtf{Processes: processes}
 
-// 	srtf.ShortestRemainingJobFirst()
-// }
+	srtf.ShortestRemainingJobFirst()
+}

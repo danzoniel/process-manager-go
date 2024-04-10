@@ -2,6 +2,8 @@ package algorithms
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 )
 
 type Srtf struct {
@@ -10,7 +12,7 @@ type Srtf struct {
 }
 
 func (s *Srtf) ShortestRemainingJobFirst() {
-	fmt.Println("\nPRIOp")
+	fmt.Println("\nSHORTEST REMANING TIME FIRST")
 
 	p := make([]Process, len(s.Processes))
 	available := make([]Process, 0)
@@ -20,16 +22,14 @@ func (s *Srtf) ShortestRemainingJobFirst() {
 	waitingProcessess := make([]Process, 0)
 	numberOfProcesses := len(s.Processes) - 1
 	moment := 1
+	res := make([]Process, 0)
+	aux := make([]Process, 0)
 
 	//Cria um novo array com todos os processos e conta o tempo total de todos os processos
 	for i := 0; i <= numberOfProcesses; i++ {
 		p[i] = s.Processes[i].NewProcess()
 		s.TotalProcessTime += p[i].ServiceTime
 	}
-
-	fmt.Println("Tempo total de todos os processos somados: ", s.TotalProcessTime)
-
-	fmt.Println("Processos recebidos: ", s.Processes)
 
 	for actualInstant < s.TotalProcessTime {
 
@@ -43,47 +43,52 @@ func (s *Srtf) ShortestRemainingJobFirst() {
 			}
 		}
 
-		fmt.Println("Processo temporário que talvez volte pra fila de espera: ", tempNextJob)
-
 		if tempNextJob.ServiceTime > 0 {
-			fmt.Println("Processo temporário que tá voltando pra lista de espera: ", tempNextJob)
-
 			available = append(available, tempNextJob)
 		}
 
 		p = nil
 		p = waitingProcessess
 
-		fmt.Println("Processos disponíveis para executar", available)
-		fmt.Println("Processos na lista de espera", p)
-
 		//Procura a maior prioridade entre os disponíveis
 		index := 0
-		fmt.Println("Valor da prioridade: ", tempNextJob.ServiceTime)
-		fmt.Println("Valor do nextJob: ", nextJob)
+
 		for i, job := range available {
-			if job.ServiceTime < tempNextJob.ServiceTime || i == 0 {
+			fmt.Println("checando quem tem o menor tempo dos disponíveis: ", available)
+
+			if job.ServiceTime < nextJob.ServiceTime || i == 0 {
 				index = i
-				tempNextJob = job
+				nextJob = job
+			} else if job.ServiceTime == nextJob.ServiceTime {
+				// Se o tempo de serviço for igual, compara os processId
+				jobId, _ := strconv.Atoi(strings.TrimPrefix(job.ProcessId, "t"))
+				nextJobId, _ := strconv.Atoi(strings.TrimPrefix(nextJob.ProcessId, "t"))
+
+				if jobId > nextJobId {
+					index = i
+					nextJob = job
+				}
 			}
 		}
 
-		nextJob = tempNextJob
+		// fmt.Println("o que tem o menor tempo entre os disponíveis é: ", nextJob)
 
-		fmt.Println("Processo que será executado: ", nextJob)
-
-		fmt.Println("Index do processo que será removido da lista de disponíveis: ", index)
-
-		fmt.Println("Instante atual antes do processo: ", actualInstant)
+		nextJob.ProcessTime.startedExecutingAt = actualInstant
 
 		//Execução do processo
 		nextJob.ServiceTime -= moment
 
 		nextJob.ProcessTime.finishedExecutingAt = actualInstant + moment
 
-		//Checa para ver se há algum processo disponível que merece interromper
+		nextJob.ProcessTime.totalWaitingTime = nextJob.ProcessTime.startedExecutingAt - nextJob.ArrivedTime
 
-		fmt.Println("Next Job depois de processar o quantum", nextJob)
+		if nextJob.ServiceTime <= 0 {
+			nextJob.Done = true
+			nextJob.ProcessTime.totalExecutionTime = nextJob.ProcessTime.finishedExecutingAt - nextJob.ArrivedTime
+			aux = append(aux, nextJob)
+		}
+
+		//Checa para ver se há algum processo disponível que merece interromper
 
 		//Encontra o instante de término do processo
 
@@ -93,18 +98,19 @@ func (s *Srtf) ShortestRemainingJobFirst() {
 		//Guarda o next job como um processo temporário
 		tempNextJob = nextJob
 
-		fmt.Println("Instante que o processo atual terminou de executar: ", nextJob.ProcessTime.finishedExecutingAt)
-		fmt.Println("Instante atual: ", actualInstant)
-
 		//Limpa o processo
 		nextJob = Process{}
 
+		tempNextJob.ProcessTime.totalExecutionTime = tempNextJob.ProcessTime.finishedExecutingAt - tempNextJob.ArrivedTime
+
+		res = append(res, tempNextJob)
+
 		//Remove o processo da lista de processos disponíveis
 		available = append(available[:index], available[index+1:]...)
-		fmt.Println("Lista de disponíveis depois da remoção: ", available)
 
 	}
 
-	CalculateAverageProcessTime(p)
+	Graph(res)
+	CalculateAverageProcessTime(aux)
 	CalculateAverageWaitTime(p)
 }
