@@ -85,7 +85,8 @@ func handleProcesses(processes []algorithms.Process) {
 	callFcfs(processes)
 	// callSjf(processes)
 	// callRr(processes)
-	callPrioC(processes)
+	// callPrioC(processes)
+	callPrioP(processes)
 }
 
 func callFcfs(processes []algorithms.Process) {
@@ -107,8 +108,14 @@ func callFcfs(processes []algorithms.Process) {
 // 	rr.RoundRobin()
 // }
 
-func callPrioC(processes []algorithms.Process) {
-	prioc := algorithms.PrioC{Processes: processes}
+// func callPrioC(processes []algorithms.Process) {
+// 	prioc := algorithms.PrioC{Processes: processes}
 
-	prioc.PrioC()
+// 	prioc.PrioC()
+// }
+
+func callPrioP(processes []algorithms.Process) {
+	priop := algorithms.PrioP{Processes: processes}
+
+	priop.PrioP()
 }
