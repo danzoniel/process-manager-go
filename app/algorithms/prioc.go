@@ -52,6 +52,8 @@ func (s *PrioC) PrioC() {
 			}
 		}
 
+		nextJob.ProcessTime.startedExecutingAt = actualInstant
+
 		// fmt.Println("Processo com o menor tempo de serviço que será executado: ", shortestJob)
 
 		// fmt.Println("Index do processo que será removido da lista de disponíveis: ", index)

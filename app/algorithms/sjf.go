@@ -60,6 +60,7 @@ func (s *Sjf) ShortestJobFirst() {
 
 		//Encontra o instante de término do processo
 		nextJob.ProcessTime.finishedExecutingAt = actualInstant + nextJob.ServiceTime
+		nextJob.ProcessTime.startedExecutingAt = actualInstant
 
 		//Incrementa o instante atual do algoritmo
 		actualInstant = nextJob.ProcessTime.finishedExecutingAt

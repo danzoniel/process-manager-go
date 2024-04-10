@@ -69,6 +69,8 @@ func (s *PrioP) PrioP() {
 			}
 		}
 
+		nextJob.ProcessTime.startedExecutingAt = actualInstant
+
 		// fmt.Println("Processo que será executado: ", nextJob)
 
 		// fmt.Println("Index do processo que será removido da lista de disponíveis: ", index)
