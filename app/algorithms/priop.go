@@ -27,9 +27,9 @@ func (s *PrioP) PrioP() []Process {
 		s.TotalProcessTime += p[i].ServiceTime
 	}
 
-	fmt.Println("Tempo total de todos os processos somados: ", s.TotalProcessTime)
+	// fmt.Println("Tempo total de todos os processos somados: ", s.TotalProcessTime)
 
-	fmt.Println("Processos recebidos: ", s.Processes)
+	// fmt.Println("Processos recebidos: ", s.Processes)
 
 	for actualInstant < s.TotalProcessTime {
 
@@ -43,10 +43,10 @@ func (s *PrioP) PrioP() []Process {
 			}
 		}
 
-		fmt.Println("Processo temporário que talvez volte pra fila de espera: ", tempNextJob)
+		// fmt.Println("Processo temporário que talvez volte pra fila de espera: ", tempNextJob)
 
 		if tempNextJob.ServiceTime > 0 {
-			fmt.Println("Processo temporário que tá voltando pra lista de espera: ", tempNextJob)
+			// fmt.Println("Processo temporário que tá voltando pra lista de espera: ", tempNextJob)
 
 			available = append(available, tempNextJob)
 		}
@@ -54,12 +54,13 @@ func (s *PrioP) PrioP() []Process {
 		p = nil
 		p = waitingProcessess
 
-		fmt.Println("Processos disponíveis para executar", available)
-		fmt.Println("Processos na lista de espera", p)
+		// fmt.Println("Processos disponíveis para executar", available)
+		// fmt.Println("Processos na lista de espera", p)
 
 		//Procura a maior prioridade entre os disponíveis
 		index := 0
-		fmt.Println("Valor da prioridade: ", nextJob.Priority)
+		// fmt.Println("Valor da prioridade: ", nextJob.Priority)
+		// fmt.Println("Valor do nextJob: ", nextJob)
 		for i, job := range available {
 			if job.Priority > nextJob.Priority || i == 0 {
 				index = i
@@ -69,9 +70,9 @@ func (s *PrioP) PrioP() []Process {
 
 		fmt.Println("Processo que será executado: ", nextJob)
 
-		fmt.Println("Index do processo que será removido da lista de disponíveis: ", index)
+		// fmt.Println("Index do processo que será removido da lista de disponíveis: ", index)
 
-		fmt.Println("Instante atual antes do processo: ", actualInstant)
+		// fmt.Println("Instante atual antes do processo: ", actualInstant)
 
 		//Execução do processo
 		nextJob.ServiceTime -= moment
@@ -90,7 +91,7 @@ func (s *PrioP) PrioP() []Process {
 		//Guarda o next job como um processo temporário
 		tempNextJob = nextJob
 
-		fmt.Println("Instante que o processo atual terminou de executar: ", nextJob.ProcessTime.finishedExecutingAt)
+		// fmt.Println("Instante que o processo atual terminou de executar: ", nextJob.ProcessTime.finishedExecutingAt)
 		fmt.Println("Instante atual: ", actualInstant)
 
 		//Limpa o processo
@@ -98,7 +99,7 @@ func (s *PrioP) PrioP() []Process {
 
 		//Remove o processo da lista de processos disponíveis
 		available = append(available[:index], available[index+1:]...)
-		fmt.Println("Lista de disponíveis depois da remoção: ", available)
+		// fmt.Println("Lista de disponíveis depois da remoção: ", available)
 
 	}
 

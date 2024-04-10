@@ -17,12 +17,9 @@ type Process struct {
 }
 
 type ProcessTime struct {
-	// startedExecutingAt  int
 	finishedExecutingAt int
-	// startedWaitingAt    int
-	// finishedWaitingAt   int
-	totalExecutionTime int
-	totalWaitingTime   int
+	totalExecutionTime  int
+	totalWaitingTime    int
 }
 
 func (p *Process) NewProcess() Process {
