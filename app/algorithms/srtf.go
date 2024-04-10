@@ -54,24 +54,19 @@ func (s *Srtf) ShortestRemainingJobFirst() {
 		index := 0
 
 		for i, job := range available {
-			fmt.Println("checando quem tem o menor tempo dos disponíveis: ", available)
-
 			if job.ServiceTime < nextJob.ServiceTime || i == 0 {
 				index = i
 				nextJob = job
 			} else if job.ServiceTime == nextJob.ServiceTime {
-				// Se o tempo de serviço for igual, compara os processId
 				jobId, _ := strconv.Atoi(strings.TrimPrefix(job.ProcessId, "t"))
 				nextJobId, _ := strconv.Atoi(strings.TrimPrefix(nextJob.ProcessId, "t"))
 
-				if jobId > nextJobId {
+				if jobId < nextJobId {
 					index = i
 					nextJob = job
 				}
 			}
 		}
-
-		// fmt.Println("o que tem o menor tempo entre os disponíveis é: ", nextJob)
 
 		nextJob.ProcessTime.startedExecutingAt = actualInstant
 
