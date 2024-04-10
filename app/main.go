@@ -84,14 +84,14 @@ func handleProcesses(processes []algorithms.Process) {
 
 	callFcfs(processes)
 	// callSjf(processes)
-	callRr(processes)
+	// callRr(processes)
+	callPrioC(processes)
 }
 
 func callFcfs(processes []algorithms.Process) {
 	fcfs := algorithms.Fcfs{Processes: processes}
 
 	fcfs.FirstComeFirtServerd()
-	fcfs.PrintTable()
 }
 
 // func callSjf(processes []algorithms.Process) {
@@ -101,9 +101,14 @@ func callFcfs(processes []algorithms.Process) {
 // 	// sjf.PrintTable()
 // }
 
-func callRr(processes []algorithms.Process) {
-	rr := algorithms.Rr{Processes: processes}
+// func callRr(processes []algorithms.Process) {
+// 	rr := algorithms.Rr{Processes: processes}
 
-	rr.RoundRobin()
-	// sjf.PrintTable()
+// 	rr.RoundRobin()
+// }
+
+func callPrioC(processes []algorithms.Process) {
+	prioc := algorithms.PrioC{Processes: processes}
+
+	prioc.PrioC()
 }

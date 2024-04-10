@@ -50,7 +50,6 @@ func (s *Rr) RoundRobin() []Process {
 			fmt.Println("Processo temporário que tá voltando pra lista de espera: ", tempNextJob)
 
 			available = append(available, tempNextJob)
-			// waitingProcessess = append(waitingProcessess, tempNextJob)
 		}
 
 		p = nil
@@ -77,7 +76,6 @@ func (s *Rr) RoundRobin() []Process {
 
 		//Executando 2 quantum do processo que tá sendo executado
 
-		//Tira 2 quantum do processo, remove ele da fila e o coloca ao final da fila se tempo de serviço - 2 > 0
 		fmt.Println("Next Job antes do processa o quantum", nextJob)
 
 		nextJob.ServiceTime -= s.Quantum
@@ -98,10 +96,6 @@ func (s *Rr) RoundRobin() []Process {
 		fmt.Println("Next Job depois de processar o quantum", nextJob)
 
 		//Encontra o instante de término do processo
-		// if  nextJob.ServiceTime < s.Quantum && nextJob.ServiceTime != 0 {
-		// 	nextJob.ProcessTime.finishedExecutingAt = actualInstant + nextJob.ServiceTime
-		// } else {
-		// }
 
 		//Incrementa o instante atual do algoritmo
 		actualInstant = nextJob.ProcessTime.finishedExecutingAt
@@ -118,8 +112,6 @@ func (s *Rr) RoundRobin() []Process {
 		//Remove o processo da lista de processos disponíveis
 		available = append(available[:index], available[index+1:]...)
 		fmt.Println("Lista de disponíveis depois da remoção: ", available)
-
-		//ToDo dinamizar o Quantum para representar o momento atual correto
 
 	}
 
