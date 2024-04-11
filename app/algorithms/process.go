@@ -3,19 +3,25 @@ package algorithms
 import (
 	"fmt"
 	"math/rand"
+	"sort"
 	"strconv"
-)
-
-const (
-	noValues     = 0
-	defaultValue = 6
+	"time"
 )
 
 type Process struct {
 	ProcessId   string
-	Priority    uint
-	ServiceTime uint
-	ArrivedTime uint
+	Priority    int
+	ServiceTime int
+	ArrivedTime int
+	Done        bool
+	ProcessTime ProcessTime
+}
+
+type ProcessTime struct {
+	finishedExecutingAt int
+	startedExecutingAt  int
+	totalExecutionTime  int
+	totalWaitingTime    int
 }
 
 func (p *Process) NewProcess() Process {
@@ -24,6 +30,7 @@ func (p *Process) NewProcess() Process {
 		Priority:    p.Priority,
 		ServiceTime: p.ServiceTime,
 		ArrivedTime: p.ArrivedTime,
+		ProcessTime: p.ProcessTime,
 	}
 }
 
@@ -38,17 +45,54 @@ func PrintTable(processess []Process) {
 func (p *Process) RandomizeProcesses(n uint) []Process {
 	fmt.Println("GERANDO", n, "PROCESSOS ALEATÓRIOS")
 	processes := make([]Process, n)
-	counter := 1
+	rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	for range n {
-		idStr := strconv.Itoa(int(counter))
-		p.ProcessId = "T" + idStr
-		p.Priority = uint(rand.Intn(int(n)))
-		p.ServiceTime = uint(rand.Intn(int(n)) + 1)
-		p.ArrivedTime = uint(rand.Intn(int(n)))
-		processes[counter-1] = p.NewProcess()
-		counter++
+	for i := uint(0); i < n; i++ {
+		process := Process{
+			Priority:    rand.Intn(int(n)) + 1,
+			ServiceTime: rand.Intn(int(n)) + 1,
+			ArrivedTime: rand.Intn(int(n)),
+		}
+		processes[i] = process
+	}
+
+	sort.Slice(processes, func(i, j int) bool {
+		return processes[i].ArrivedTime < processes[j].ArrivedTime
+	})
+
+	for i := range processes {
+		idStr := strconv.Itoa(i + 1)
+		processes[i].ProcessId = "T" + idStr
 	}
 
 	return processes
+}
+
+func CalculateAverageProcessTime(processes []Process) {
+	totalProcessTime := 0
+
+	for i := range processes {
+		totalProcessTime += processes[i].ProcessTime.totalExecutionTime
+	}
+
+	averageTotalProcessTime := float64(totalProcessTime) / float64(len(processes))
+
+	fmt.Printf("\nTempo médio de processo: %.1fs\n", averageTotalProcessTime)
+}
+
+func CalculateAverageWaitTime(processes []Process) {
+	totalWaitTime := 0
+	for i := range processes {
+		totalWaitTime += processes[i].ProcessTime.totalWaitingTime
+	}
+
+	averageTotalWaitTime := float64(totalWaitTime) / float64(len(processes))
+
+	fmt.Printf("\nTempo médio de espera: %.1fs\n", averageTotalWaitTime)
+}
+
+func Graph(p []Process) {
+	for i := range p {
+		fmt.Printf("\nProcesso %s, Chegou: %d, Começou: %d, Terminou: %d\n", p[i].ProcessId, p[i].ArrivedTime, p[i].ProcessTime.startedExecutingAt, p[i].ProcessTime.finishedExecutingAt)
+	}
 }

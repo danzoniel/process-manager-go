@@ -4,30 +4,35 @@ import (
 	"fmt"
 )
 
-type Sjf struct {
+type PrioP struct {
 	Processes        []Process
 	TotalProcessTime int
 }
 
-func (s *Sjf) ShortestJobFirst() {
-	fmt.Println("\nSHORTEST JOB FIRST")
+func (s *PrioP) PrioP() {
+	fmt.Println("\nPRIOp")
 
 	p := make([]Process, len(s.Processes))
 	available := make([]Process, 0)
 	nextJob := Process{}
-	res := make([]Process, 0)
 	actualInstant := 0
-
+	tempNextJob := Process{}
+	waitingProcessess := make([]Process, 0)
 	numberOfProcesses := len(s.Processes) - 1
-	//Cria um novo array com todos os processos
+	moment := 1
+	res := make([]Process, 0)
+	aux := make([]Process, 0)
+
+	//Cria um novo array com todos os processos e conta o tempo total de todos os processos
 	for i := 0; i <= numberOfProcesses; i++ {
 		p[i] = s.Processes[i].NewProcess()
+		s.TotalProcessTime += p[i].ServiceTime
 	}
 
-	for i := 0; i <= numberOfProcesses; i++ {
+	for actualInstant < s.TotalProcessTime {
 
 		//Cria um novo array com os processos disponíveis para o instante atual
-		waitingProcessess := make([]Process, 0)
+		waitingProcessess = make([]Process, 0)
 		for i := range p {
 			if p[i].ArrivedTime <= actualInstant {
 				available = append(available, p[i])
@@ -36,28 +41,47 @@ func (s *Sjf) ShortestJobFirst() {
 			}
 		}
 
+		if tempNextJob.ServiceTime > 0 {
+			available = append(available, tempNextJob)
+		}
+
 		p = nil
 		p = waitingProcessess
 
-		//Procura o menor tempo entre os disponíveis
+		//Procura a maior prioridade entre os disponíveis
 		index := 0
-		// fmt.Println("Valor do shortest job arrived time: ", shortestJob.ArrivedTime)
+
 		for i, job := range available {
-			if job.ServiceTime < nextJob.ServiceTime || i == 0 {
+			if job.Priority > nextJob.Priority || i == 0 {
 				index = i
 				nextJob = job
 			}
 		}
 
-		//Encontra o instante de término do processo
-		nextJob.ProcessTime.finishedExecutingAt = actualInstant + nextJob.ServiceTime
 		nextJob.ProcessTime.startedExecutingAt = actualInstant
+
+		//Execução do processo
+		nextJob.ServiceTime -= moment
+
+		nextJob.ProcessTime.finishedExecutingAt = actualInstant + moment
+
 		nextJob.ProcessTime.totalWaitingTime = nextJob.ProcessTime.startedExecutingAt - nextJob.ArrivedTime
+
+		if nextJob.ServiceTime <= 0 {
+			nextJob.Done = true
+			nextJob.ProcessTime.totalExecutionTime = nextJob.ProcessTime.finishedExecutingAt - nextJob.ArrivedTime
+			aux = append(aux, nextJob)
+		}
+
+		//Checa para ver se há algum processo disponível que merece interromper
+
+		//Encontra o instante de término do processo
 
 		//Incrementa o instante atual do algoritmo
 		actualInstant = nextJob.ProcessTime.finishedExecutingAt
 
-		tempNextJob := nextJob
+		//Guarda o next job como um processo temporário
+		tempNextJob = nextJob
 
 		//Limpa o processo
 		nextJob = Process{}
@@ -65,11 +89,13 @@ func (s *Sjf) ShortestJobFirst() {
 		tempNextJob.ProcessTime.totalExecutionTime = tempNextJob.ProcessTime.finishedExecutingAt - tempNextJob.ArrivedTime
 
 		res = append(res, tempNextJob)
+
 		//Remove o processo da lista de processos disponíveis
 		available = append(available[:index], available[index+1:]...)
+
 	}
 
 	Graph(res)
-	CalculateAverageProcessTime(res)
-	CalculateAverageWaitTime(res)
+	CalculateAverageProcessTime(aux)
+	CalculateAverageWaitTime(p)
 }

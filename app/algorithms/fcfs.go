@@ -2,77 +2,40 @@ package algorithms
 
 import (
 	"fmt"
-	"sort"
 )
 
 type Fcfs struct {
-	Processes []Process
-	ProcessHandler
+	Processes        []Process
+	TotalProcessTime int
 }
 
-func (a *Fcfs) FirstComeFirtServerd() []Process {
+func (f *Fcfs) FirstComeFirtServerd() {
 	fmt.Println("\nFIRST COME FIRST SERVED")
 
-	processessQuantity := len(a.Processes)
+	p := make([]Process, len(f.Processes))
+	finishedExecutingAt := p[0].ArrivedTime
+	actualInstant := 0
 
-	if processessQuantity <= 1 {
-		return a.Processes
-	}
+	for i := range f.Processes {
+		p[i] = f.Processes[i].NewProcess()
 
-	sort.SliceStable(a.Processes, func(i, j int) bool {
-		return a.Processes[i].ArrivedTime < a.Processes[j].ArrivedTime
-	})
-	return a.Processes
-}
+		finishedExecutingAt += p[i].ServiceTime
 
-func (a *Fcfs) AverageExecutionTime() {
-	var res int
-	var finalRes float32
-	var i int
+		p[i].ProcessTime.finishedExecutingAt = finishedExecutingAt
 
-	fmt.Print("\nTempo médio de execução\n")
-	fmt.Print("(")
+		p[i].ProcessTime.startedExecutingAt = actualInstant
 
-	for i = range a.Processes {
-		res = int(a.Processes[i].ServiceTime) + res
-		resMinusArrivedTime := res - int(a.Processes[i].ArrivedTime)
-		finalRes = float32(finalRes) + float32(resMinusArrivedTime)
+		p[i].ProcessTime.totalExecutionTime = p[i].ProcessTime.finishedExecutingAt - p[i].ArrivedTime
 
-		fmt.Printf("(%d - %d)", res, a.Processes[i].ArrivedTime)
-		if i < len(a.Processes)-1 {
-			fmt.Print(" + ")
+		actualInstant = p[i].ProcessTime.finishedExecutingAt
+		if i > 0 {
+			p[i].ProcessTime.totalWaitingTime = p[i-1].ProcessTime.finishedExecutingAt - p[i].ArrivedTime
 		}
 	}
 
-	processesLength := float32(len(a.Processes))
+	f.TotalProcessTime = p[len(f.Processes)-1].ProcessTime.finishedExecutingAt
 
-	fmt.Print(")")
-	fmt.Printf(" / %d", len(a.Processes))
-	fmt.Printf(" = %.1f s", finalRes/processesLength)
-
-}
-
-func (a *Fcfs) AverageWaitingTime() {
-	var totalWaitTime uint
-
-	fmt.Print("\nTempo médio de espera\n")
-	fmt.Print("(")
-
-	for i := range a.Processes {
-		if i != 0 {
-			totalWaitTime += a.Processes[i-1].ServiceTime
-		}
-		totalWaitTime += a.Processes[i].ArrivedTime
-
-		fmt.Printf("(%d + %d)", totalWaitTime, a.Processes[i].ArrivedTime)
-		if i < len(a.Processes)-1 {
-			fmt.Print(" + ")
-		}
-	}
-
-	processesLength := float32(len(a.Processes))
-
-	fmt.Print(")")
-	fmt.Printf(" / %d", len(a.Processes))
-	fmt.Printf(" = %.1f s", float32(totalWaitTime)/processesLength)
+	Graph(p)
+	CalculateAverageProcessTime(p)
+	CalculateAverageWaitTime(p)
 }
